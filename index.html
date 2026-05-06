@@ -1,653 +1,1064 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ตารางเรียน ม.6/10 · ภาคเรียนที่ 1/2569</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Discipline OS">
+<meta name="theme-color" content="#080808">
+<title>Discipline OS</title>
+<style>
+:root{
+  --bg:#080808;--s1:#111;--s2:#1c1c1e;--s3:#2c2c2e;
+  --b1:#2a2a2a;--b2:#3a3a3c;
+  --t1:#f5f5f5;--t2:#8e8e93;--t3:#48484a;
+  --green:#30d158;--green-dim:#1a7a33;
+  --amber:#ffd60a;--amber-dim:#7a6300;
+  --red:#ff453a;--blue:#0a84ff;
+  --r:14px;--rs:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;}
+html{height:100%;background:var(--bg);}
+body{height:100%;background:var(--bg);color:var(--t1);font-family:-apple-system,'Helvetica Neue',sans-serif;overscroll-behavior:none;}
+.app{display:flex;flex-direction:column;height:100vh;height:100svh;max-width:430px;margin:0 auto;position:relative;}
 
-    :root {
-      --bg: #f5f6fa;
-      --surface: #ffffff;
-      --border: #e5e7eb;
-      --text: #111827;
-      --muted: #6b7280;
-      --faint: #9ca3af;
-      --radius: 12px;
-      --gap: 8px;
-      --accent: #4338ca;
-      --week-a: #7c3aed;
-      --week-b: #0369a1;
-    }
+/* ── Header ── */
+.hdr{padding:calc(env(safe-area-inset-top,0px) + 14px) 20px 12px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+.hdr-logo{font-size:17px;font-weight:700;letter-spacing:-.4px;}
+.hdr-logo span{color:var(--green);}
+.hdr-date{font-size:12px;color:var(--t2);background:var(--s2);border:1px solid var(--b1);border-radius:20px;padding:4px 11px;}
 
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #0f0f13;
-        --surface: #1a1a24;
-        --border: #2a2a38;
-        --text: #f1f1f5;
-        --muted: #8b8baa;
-        --faint: #555570;
-      }
-    }
+/* ── Tab bar ── */
+.tabbar{flex-shrink:0;display:flex;background:var(--s1);border-top:1px solid var(--b1);padding:6px 0 calc(env(safe-area-inset-bottom,0px) + 6px);}
+.tb{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;border:none;background:transparent;color:var(--t3);font-size:10px;font-weight:500;cursor:pointer;padding:4px 0;transition:color .12s;}
+.tb.on{color:var(--green);}
+.tb svg{width:22px;height:22px;}
 
-    body {
-      font-family: 'Sarabun', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      padding: 1.5rem;
-    }
-    .wrap { max-width: 980px; margin: 0 auto; }
+/* ── Content ── */
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 16px;}
 
-    /* ── Controls ─────────────────────────────── */
-    .controls { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+/* ── Stat row ── */
+.stats{display:flex;gap:8px;margin:14px 0 10px;}
+.stat{flex:1;background:var(--s2);border:1px solid var(--b1);border-radius:var(--rs);padding:10px 12px;}
+.stat-n{font-size:24px;font-weight:600;letter-spacing:-.5px;color:var(--t1);}
+.stat-l{font-size:10px;color:var(--t2);margin-top:1px;letter-spacing:.02em;}
 
-    .btn-full {
-      display: inline-flex; align-items: center; gap: 7px;
-      padding: 10px 18px;
-      background: linear-gradient(135deg, #1a1a2e, #0f3460);
-      color: #fff; border: none; border-radius: 10px;
-      font-family: 'Sarabun', sans-serif; font-size: 14px; font-weight: 600;
-      cursor: pointer; transition: opacity .15s, transform .1s; white-space: nowrap;
-    }
-    .btn-full:hover { opacity: .88; transform: translateY(-1px); }
-    .btn-full:active { transform: scale(.97); }
+/* ── Progress ── */
+.prog-wrap{height:3px;background:var(--s3);border-radius:20px;margin-bottom:12px;overflow:hidden;}
+.prog{height:100%;background:var(--green);border-radius:20px;transition:width .5s cubic-bezier(.4,0,.2,1);}
 
-    .select-wrap { position: relative; flex: 1; min-width: 170px; max-width: 240px; }
-    .select-wrap select {
-      appearance: none; -webkit-appearance: none; width: 100%;
-      padding: 10px 34px 10px 14px;
-      background: var(--surface); color: var(--text);
-      border: 1.5px solid var(--border); border-radius: 10px;
-      font-family: 'Sarabun', sans-serif; font-size: 14px; font-weight: 500;
-      cursor: pointer; outline: none; transition: border-color .15s;
-    }
-    .select-wrap select:focus { border-color: var(--accent); }
-    .select-arrow { position: absolute; right: 11px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--muted); }
+/* ── Card ── */
+.card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);margin-bottom:10px;overflow:hidden;}
+.card-head{padding:10px 16px;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;align-items:center;}
+.card-label{font-size:11px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.07em;}
 
-    .week-toggle { display: flex; gap: 0; border-radius: 10px; overflow: hidden; border: 1.5px solid var(--border); }
-    .week-btn {
-      padding: 9px 16px; border: none; cursor: pointer;
-      font-family: 'Sarabun', sans-serif; font-size: 13px; font-weight: 600;
-      background: var(--surface); color: var(--muted);
-      transition: background .2s, color .2s;
-      display: flex; align-items: center; gap: 5px;
-    }
-    .week-btn .dot { width: 8px; height: 8px; border-radius: 50%; }
-    .week-btn.a.active { background: var(--week-a); color: #fff; }
-    .week-btn.b.active { background: var(--week-b); color: #fff; }
-    .week-btn:not(.active):hover { background: var(--bg); }
-    .week-divider { width: 1px; background: var(--border); flex-shrink: 0; }
-    .week-btn.a .dot { background: var(--week-a); }
-    .week-btn.a.active .dot { background: rgba(255,255,255,.6); }
-    .week-btn.b .dot { background: var(--week-b); }
-    .week-btn.b.active .dot { background: rgba(255,255,255,.6); }
+/* ── Habit rows ── */
+.h-row{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--b1);cursor:pointer;transition:background .1s;}
+.h-row:last-child{border-bottom:none;}
+.h-row:active{background:var(--s2);}
+.h-row.dragging{opacity:.25;}
+.h-row.drop-above{border-top:2px solid var(--green)!important;}
+.h-row.drop-below{border-bottom:2px solid var(--green)!important;}
+.h-handle{display:flex;align-items:center;padding:0 4px 0 0;flex-shrink:0;color:var(--t3);touch-action:none;cursor:grab;}
+.h-handle svg{width:14px;height:14px;pointer-events:none;}
+.chk{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--b2);background:transparent;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.chk.on{background:var(--green);border-color:var(--green);}
+.chk.on::after{content:'';display:block;width:5px;height:9px;border:2px solid #000;border-top:none;border-left:none;transform:rotate(45deg) translate(-1px,-1px);}
+.h-label{flex:1;font-size:15px;color:var(--t1);}
+.h-label.on{color:var(--t3);text-decoration:line-through;}
+.streak{font-size:11px;font-weight:600;color:#ffd60a;background:rgba(255,214,10,.12);border-radius:20px;padding:3px 8px;}
+.del-btn{background:none;border:none;color:var(--t3);font-size:20px;cursor:pointer;line-height:1;padding:2px 6px;}
+.del-btn:active{color:var(--red);}
 
-    /* ── Day heading ──────────────────────────── */
-    .day-heading { display: none; align-items: center; gap: 10px; margin-bottom: 14px; }
-    .day-heading.visible { display: flex; }
-    .day-pill { background: var(--accent); color: #fff; border-radius: 8px; padding: 5px 18px; font-size: 15px; font-weight: 600; }
-    .day-pill-en { font-size: 13px; color: var(--muted); }
+/* ── Add input ── */
+.add-row{display:flex;gap:8px;margin-top:6px;margin-bottom:16px;}
+.add-in{flex:1;background:var(--s2);border:1px solid var(--b1);border-radius:var(--rs);padding:11px 14px;font-size:15px;color:var(--t1);outline:none;-webkit-appearance:none;}
+.add-in:focus{border-color:var(--green-dim);}
+.add-in::placeholder{color:var(--t3);}
+.add-btn{background:var(--green);border:none;border-radius:var(--rs);padding:0 18px;color:#000;font-size:15px;font-weight:700;cursor:pointer;}
 
-    /* ── Grid ─────────────────────────────────── */
-    .days { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--gap); }
-    .days.single { grid-template-columns: 1fr; max-width: 380px; }
-    .days.single .col        { display: none; }
-    .days.single .col.active { display: block; }
-    .days.full   .col        { display: block; }
+/* ── Pomodoro ── */
+.pomo-wrap{display:flex;flex-direction:column;align-items:center;padding:10px 0 20px;}
+.pomo-ring{margin-bottom:24px;}
+.pomo-btns{display:flex;gap:10px;margin-bottom:18px;}
+.p-btn{height:46px;padding:0 26px;border-radius:23px;border:1px solid var(--b2);background:transparent;color:var(--t1);font-size:15px;font-weight:500;cursor:pointer;transition:all .12s;}
+.p-btn.primary{background:var(--green);border-color:var(--green);color:#000;font-weight:700;}
+.p-btn:active{transform:scale(.97);}
+.pomo-sess{font-size:13px;color:var(--t2);margin-bottom:20px;}
+.jail-btn{width:100%;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:15px;font-size:14px;color:var(--t2);cursor:pointer;transition:all .15s;}
+.jail-btn.hot{background:rgba(255,69,58,.08);border-color:rgba(255,69,58,.3);color:var(--red);}
 
-    .col-head {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 10px; padding: 9px 6px; text-align: center; margin-bottom: 6px;
-    }
-    .col-head .dow { font-size: 13px; font-weight: 600; color: var(--accent); }
-    .col-head .doe { font-size: 10px; color: #a5b4fc; margin-top: 1px; }
-    @media (prefers-color-scheme: dark) {
-      .col-head { background: #1e1b4b; border-color: #312e81; }
-      .col-head .dow { color: #a5b4fc; }
-    }
+/* ── Phone Jail ── */
+.jail-over{position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:999;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:40px 20px;}
+.jail-over.show{display:flex;}
+.jail-em{font-size:64px;margin-bottom:6px;}
+.jail-title{font-size:20px;font-weight:700;color:var(--t1);}
+.jail-timer{font-size:64px;font-weight:200;letter-spacing:-3px;color:var(--t1);font-variant-numeric:tabular-nums;}
+.jail-msg{font-size:14px;color:var(--t2);text-align:center;line-height:1.6;max-width:260px;}
+.jail-quit{margin-top:12px;background:transparent;border:1px solid var(--t3);border-radius:25px;padding:11px 28px;color:var(--t3);font-size:13px;cursor:pointer;}
 
-    .blocks { display: flex; flex-direction: column; gap: 5px; }
+/* ── Tasks ── */
+.sync-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0 8px;}
+.sync-lbl{font-size:12px;color:var(--t2);}
+.sync-btn{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rs);padding:6px 14px;font-size:12px;color:var(--t1);cursor:pointer;font-weight:500;}
+.t-row{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--b1);transition:background .1s;}
+.t-row:last-child{border-bottom:none;}
+.t-row:active{background:var(--s2);}
+.sq{width:20px;height:20px;border-radius:5px;border:1.5px solid var(--b2);background:transparent;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.sq.on{background:var(--green);border-color:var(--green);}
+.sq.on::after{content:'';display:block;width:4px;height:7px;border:1.5px solid #000;border-top:none;border-left:none;transform:rotate(45deg) translate(-0.5px,-1px);}
+.t-label{flex:1;font-size:14px;line-height:1.5;color:var(--t1);}
+.t-label.on{color:var(--t3);text-decoration:line-through;}
+.pri{font-size:10px;font-weight:700;padding:3px 7px;border-radius:5px;cursor:pointer;user-select:none;transition:opacity .1s;}
+.pri:active{opacity:.6;}
+.pri-h{background:rgba(255,69,58,.15);color:#ff6961;}
+.pri-m{background:rgba(10,132,255,.12);color:#4da6ff;}
+.pri-l{background:var(--s3);color:var(--t2);}
+.drag-handle{display:flex;align-items:center;padding:0 6px 0 0;flex-shrink:0;opacity:.3;touch-action:none;cursor:grab;}
+.drag-handle svg{width:14px;height:14px;pointer-events:none;}
+.t-row.dragging{opacity:.25;}
+.t-row.drop-above{border-top:2px solid var(--green)!important;}
+.t-row.drop-below{border-bottom:2px solid var(--green)!important;}
 
-    /* A/B week visibility */
-    [data-week] { display: none; }
-    body.week-a [data-week="a"] { display: block; }
-    body.week-b [data-week="b"] { display: block; }
+/* ── Settings ── */
+.s-group{margin-top:14px;margin-bottom:10px;}
+.s-row{padding:13px 16px;border-bottom:1px solid var(--b1);}
+.s-row:last-child{border-bottom:none;}
+.s-lbl{font-size:12px;color:var(--t2);margin-bottom:6px;}
+.s-in{width:100%;background:var(--s3);border:1px solid var(--b1);border-radius:var(--rs);padding:10px 13px;font-size:13px;color:var(--t1);font-family:'SF Mono','Menlo',monospace;outline:none;-webkit-appearance:none;}
+.s-in:focus{border-color:var(--green-dim);}
+.s-hint{font-size:11px;color:var(--t3);margin-top:6px;line-height:1.5;}
+.s-save{display:block;width:100%;margin:12px 0 20px;background:var(--green);border:none;border-radius:var(--r);padding:15px;color:#000;font-size:16px;font-weight:700;cursor:pointer;}
 
-    /* ── Cards ────────────────────────────────── */
-    .card {
-      border-radius: var(--radius); overflow: hidden;
-      border: 1px solid transparent;
-      transition: transform .15s, box-shadow .15s;
-    }
-    .card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.09); }
-    .card-inner { padding: 9px 11px; }
+/* ── Priority filter chips ── */
+.filter-row{display:flex;gap:6px;margin-bottom:10px;padding-top:2px;}
+.chip{height:30px;padding:0 14px;border-radius:15px;border:1px solid var(--b2);background:transparent;color:var(--t2);font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;transition:all .12s;}
+.chip.on{border-color:transparent;color:#000;}
+.chip.all.on{background:var(--t1);color:#000;}
+.chip.h.on{background:#ff6961;border-color:#ff6961;}
+.chip.m.on{background:#4da6ff;border-color:#4da6ff;}
+.chip.l.on{background:var(--t3);border-color:var(--t3);color:var(--t1);}
+.empty{text-align:center;padding:40px 20px;color:var(--t3);font-size:14px;line-height:1.8;}
 
-    .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; gap: 4px; }
-    .card-time { font-size: 9px; font-weight: 500; letter-spacing: .05em; opacity: .7; }
-    .credit { font-size: 9px; font-weight: 700; background: rgba(0,0,0,.12); border-radius: 4px; padding: 1px 6px; white-space: nowrap; }
-    .week-badge { font-size: 8px; font-weight: 700; letter-spacing: .06em; border-radius: 4px; padding: 1px 6px; }
-    [data-week="a"] .week-badge { background: var(--week-a); color: #fff; }
-    [data-week="b"] .week-badge { background: var(--week-b); color: #fff; }
+/* ── Spinner ── */
+.spin{text-align:center;padding:28px;color:var(--t2);font-size:13px;}
+.spin::before{content:'';display:inline-block;width:16px;height:16px;border:2px solid var(--b2);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-    .card-code    { font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 3px; }
-    .card-name    { font-size: 12px; font-weight: 600; line-height: 1.4; margin-bottom: 4px; }
-    .card-teacher { font-size: 10px; opacity: .8; }
-    .card-room    { font-size: 9px; opacity: .6; margin-top: 2px; }
-    .card-room::before { content: '📍 '; font-size: 8px; }
+/* ── Notion setup callout ── */
+.callout{background:rgba(10,132,255,.08);border:1px solid rgba(10,132,255,.2);border-radius:var(--rs);padding:14px 16px;margin-bottom:10px;font-size:13px;color:#4da6ff;line-height:1.7;}
+.callout strong{display:block;margin-bottom:4px;font-size:13px;}
 
-    /* Single-day larger text */
-    .days.single .card-inner   { padding: 12px 14px; }
-    .days.single .card-time    { font-size: 11px; }
-    .days.single .card-code    { font-size: 11px; }
-    .days.single .card-name    { font-size: 15px; }
-    .days.single .card-teacher { font-size: 13px; }
-    .days.single .card-room    { font-size: 11px; }
-    .days.single .credit       { font-size: 11px; padding: 2px 8px; }
-    .days.single .week-badge   { font-size: 10px; padding: 2px 8px; }
-
-    /* Subject colours */
-    .bio { background:linear-gradient(145deg,#d1fae5,#a7f3d0); border-color:#6ee7b7; color:#065f46; }
-    .phy { background:linear-gradient(145deg,#dbeafe,#bfdbfe); border-color:#93c5fd; color:#1e3a8a; }
-    .mth { background:linear-gradient(145deg,#fef3c7,#fde68a); border-color:#fcd34d; color:#78350f; }
-    .tha { background:linear-gradient(145deg,#fee2e2,#fecaca); border-color:#fca5a5; color:#7f1d1d; }
-    .eng { background:linear-gradient(145deg,#ede9fe,#ddd6fe); border-color:#c4b5fd; color:#3730a3; }
-    .soc { background:linear-gradient(145deg,#dcfce7,#bbf7d0); border-color:#86efac; color:#14532d; }
-    .art { background:linear-gradient(145deg,#fce7f3,#fbcfe8); border-color:#f9a8d4; color:#831843; }
-    .hpe { background:linear-gradient(145deg,#ffedd5,#fed7aa); border-color:#fdba74; color:#7c2d12; }
-    .sci { background:linear-gradient(145deg,#f1f5f9,#e2e8f0); border-color:#cbd5e1; color:#334155; }
-    .com { background:linear-gradient(145deg,#e0f2fe,#bae6fd); border-color:#7dd3fc; color:#0c4a6e; }
-    .kor { background:linear-gradient(145deg,#fef9c3,#fef08a); border-color:#facc15; color:#713f12; }
-
-    @media (prefers-color-scheme: dark) {
-      .bio { background:linear-gradient(145deg,#064e3b,#065f46); border-color:#10b981; color:#a7f3d0; }
-      .phy { background:linear-gradient(145deg,#1e3a5f,#1e40af); border-color:#3b82f6; color:#bfdbfe; }
-      .mth { background:linear-gradient(145deg,#451a03,#78350f); border-color:#f59e0b; color:#fde68a; }
-      .tha { background:linear-gradient(145deg,#450a0a,#7f1d1d); border-color:#ef4444; color:#fecaca; }
-      .eng { background:linear-gradient(145deg,#1e1b4b,#312e81); border-color:#818cf8; color:#ddd6fe; }
-      .soc { background:linear-gradient(145deg,#052e16,#14532d); border-color:#22c55e; color:#bbf7d0; }
-      .art { background:linear-gradient(145deg,#4a0520,#831843); border-color:#ec4899; color:#fbcfe8; }
-      .hpe { background:linear-gradient(145deg,#431407,#7c2d12); border-color:#f97316; color:#fed7aa; }
-      .sci { background:linear-gradient(145deg,#1e293b,#334155); border-color:#64748b; color:#e2e8f0; }
-      .com { background:linear-gradient(145deg,#082f49,#0c4a6e); border-color:#38bdf8; color:#bae6fd; }
-      .kor { background:linear-gradient(145deg,#422006,#713f12); border-color:#ca8a04; color:#fef08a; }
-    }
-
-    .act-card {
-      background: var(--surface); border: 1px dashed var(--border);
-      border-radius: var(--radius); padding: 8px 11px; color: var(--faint); font-size: 10px;
-    }
-    .days.single .act-card { font-size: 13px; padding: 10px 14px; }
-
-    .lunch-card {
-      background:linear-gradient(145deg,#fefce8,#fef9c3);
-      border: 1px solid #fde047; border-radius: var(--radius);
-      padding: 7px 11px; text-align: center; color: #854d0e; font-size: 10px; font-weight: 600;
-    }
-    .days.single .lunch-card { font-size: 13px; padding: 10px 14px; }
-
-    .rotc-card {
-      background:linear-gradient(145deg,#f0fdf4,#dcfce7);
-      border: 1px solid #bbf7d0; border-radius: var(--radius);
-      padding: 9px 11px; color:#14532d; font-size:11px; font-weight:500; line-height:1.5;
-    }
-    .days.single .rotc-card { font-size:13px; padding:12px 14px; }
-
-    @media (prefers-color-scheme: dark) {
-      .lunch-card { background:linear-gradient(145deg,#1c1800,#2d2400); border-color:#854d0e; color:#fde047; }
-      .rotc-card  { background:linear-gradient(145deg,#052e16,#14532d); border-color:#16a34a; color:#86efac; }
-    }
-
-    /* Weekend subject box */
-    .weekend-card {
-      background:linear-gradient(145deg,#fdf4ff,#f3e8ff);
-      border:1px solid #d8b4fe; border-radius:var(--radius); padding:14px 16px; margin-top:18px;
-    }
-    .weekend-title { font-size:12px; font-weight:700; color:#6b21a8; text-transform:uppercase; letter-spacing:.07em; margin-bottom:10px; }
-    .weekend-item { display:flex; gap:10px; align-items:flex-start; }
-    .weekend-badge { background:#7c3aed; color:#fff; border-radius:6px; padding:3px 10px; font-size:10px; font-weight:700; white-space:nowrap; flex-shrink:0; }
-    .weekend-info { font-size:12px; color:#4c1d95; line-height:1.6; }
-    @media (prefers-color-scheme: dark) {
-      .weekend-card { background:linear-gradient(145deg,#2e1065,#3b0764); border-color:#7c3aed; }
-      .weekend-title { color:#d8b4fe; }
-      .weekend-info { color:#c4b5fd; }
-    }
-
-    /* ── Legend ───────────────────────────────── */
-    .legend-wrap { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px 20px; margin-top:18px; }
-    .legend-title { font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:12px; }
-    .legend { display:flex; flex-wrap:wrap; gap:7px; }
-    .li { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text); background:var(--bg); border:1px solid var(--border); border-radius:20px; padding:4px 12px; }
-    .ld { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
-
-    .note { font-size:11px; color:var(--faint); margin-top:14px; line-height:1.9; }
-
-    @media (max-width: 700px) {
-      body { padding: 1rem; }
-      .days.full { grid-template-columns: 1fr; }
-      .days.single { max-width: 100%; }
-    }
-  </style>
+/* ── Timetable (scoped under .tt-wrap) ── */
+.tt-wrap{font-family:'Sarabun',-apple-system,sans-serif;padding-bottom:1rem;}
+.tt-controls{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;padding-top:12px;}
+.tt-btn-full{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;background:linear-gradient(135deg,#1a1a2e,#0f3460);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;}
+.tt-select-wrap{position:relative;flex:1;min-width:140px;}
+.tt-select-wrap select{appearance:none;width:100%;padding:9px 30px 9px 12px;background:var(--s2);color:var(--t1);border:1px solid var(--b1);border-radius:10px;font-size:13px;outline:none;}
+.tt-select-arrow{position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--t2);}
+.tt-week-toggle{display:flex;border-radius:10px;overflow:hidden;border:1px solid var(--b1);}
+.tt-week-btn{padding:8px 14px;border:none;cursor:pointer;font-size:12px;font-weight:600;background:var(--s2);color:var(--t2);display:flex;align-items:center;gap:5px;transition:all .15s;}
+.tt-week-dot{width:7px;height:7px;border-radius:50%;}
+.tt-week-btn.a .tt-week-dot{background:#7c3aed;}
+.tt-week-btn.b .tt-week-dot{background:#0369a1;}
+.tt-week-btn.a.active{background:#7c3aed;color:#fff;}
+.tt-week-btn.b.active{background:#0369a1;color:#fff;}
+.tt-week-divider{width:1px;background:var(--b1);}
+.tt-day-heading{display:none;align-items:center;gap:10px;margin-bottom:12px;}
+.tt-day-heading.visible{display:flex;}
+.tt-day-pill{background:#4338ca;color:#fff;border-radius:8px;padding:5px 16px;font-size:14px;font-weight:600;}
+.tt-day-en{font-size:12px;color:var(--t2);}
+.tt-days{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
+.tt-days.single{grid-template-columns:1fr;}
+.tt-days.single .tt-col{display:none;}
+.tt-days.single .tt-col.active{display:block;}
+.tt-col-head{background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:8px 6px;text-align:center;margin-bottom:5px;}
+.tt-col-head .dow{font-size:12px;font-weight:600;color:#818cf8;}
+.tt-col-head .doe{font-size:9px;color:#555580;margin-top:1px;}
+.tt-blocks{display:flex;flex-direction:column;gap:4px;}
+.tt-wrap [data-week]{display:none;}
+.tt-wrap.week-a [data-week="a"]{display:block;}
+.tt-wrap.week-b [data-week="b"]{display:block;}
+/* subject cards */
+.tt-card{border-radius:10px;overflow:hidden;border:1px solid transparent;}
+.tt-card-inner{padding:8px 10px;}
+.tt-days.single .tt-card-inner{padding:11px 14px;}
+.tt-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;gap:4px;}
+.tt-time{font-size:9px;font-weight:500;opacity:.7;}
+.tt-days.single .tt-time{font-size:11px;}
+.tt-credit{font-size:9px;font-weight:700;background:rgba(0,0,0,.12);border-radius:4px;padding:1px 5px;white-space:nowrap;}
+.tt-days.single .tt-credit{font-size:11px;}
+.tt-wbadge{font-size:8px;font-weight:700;letter-spacing:.06em;border-radius:4px;padding:1px 5px;}
+.tt-wrap.week-a .tt-wbadge,.tt-wrap.week-b .tt-wbadge{background:#7c3aed;color:#fff;}
+[data-week="b"] .tt-wbadge{background:#0369a1!important;color:#fff!important;}
+.tt-code{font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:2px;}
+.tt-days.single .tt-code{font-size:11px;}
+.tt-name{font-size:11px;font-weight:600;line-height:1.4;margin-bottom:3px;}
+.tt-days.single .tt-name{font-size:14px;}
+.tt-teacher{font-size:10px;opacity:.8;}
+.tt-days.single .tt-teacher{font-size:12px;}
+.tt-room{font-size:9px;opacity:.6;margin-top:2px;}
+.tt-room::before{content:'📍 ';font-size:8px;}
+.tt-days.single .tt-room{font-size:11px;}
+/* subject colors */
+.tt-bio{background:linear-gradient(145deg,#064e3b,#065f46);border-color:#10b981;color:#a7f3d0;}
+.tt-phy{background:linear-gradient(145deg,#1e3a5f,#1e40af);border-color:#3b82f6;color:#bfdbfe;}
+.tt-mth{background:linear-gradient(145deg,#451a03,#78350f);border-color:#f59e0b;color:#fde68a;}
+.tt-tha{background:linear-gradient(145deg,#450a0a,#7f1d1d);border-color:#ef4444;color:#fecaca;}
+.tt-eng{background:linear-gradient(145deg,#1e1b4b,#312e81);border-color:#818cf8;color:#ddd6fe;}
+.tt-soc{background:linear-gradient(145deg,#052e16,#14532d);border-color:#22c55e;color:#bbf7d0;}
+.tt-art{background:linear-gradient(145deg,#4a0520,#831843);border-color:#ec4899;color:#fbcfe8;}
+.tt-hpe{background:linear-gradient(145deg,#431407,#7c2d12);border-color:#f97316;color:#fed7aa;}
+.tt-sci{background:linear-gradient(145deg,#1e293b,#334155);border-color:#64748b;color:#e2e8f0;}
+.tt-com{background:linear-gradient(145deg,#082f49,#0c4a6e);border-color:#38bdf8;color:#bae6fd;}
+.tt-kor{background:linear-gradient(145deg,#422006,#713f12);border-color:#ca8a04;color:#fef08a;}
+.tt-act{background:var(--s2);border:1px dashed var(--b1);border-radius:10px;padding:7px 10px;color:var(--t3);font-size:9px;}
+.tt-days.single .tt-act{font-size:12px;padding:9px 12px;}
+.tt-lunch{background:linear-gradient(145deg,#1c1800,#2d2400);border:1px solid #854d0e;border-radius:10px;padding:7px 10px;text-align:center;color:#fde047;font-size:9px;font-weight:600;}
+.tt-days.single .tt-lunch{font-size:12px;padding:9px 12px;}
+.tt-rotc{background:linear-gradient(145deg,#052e16,#14532d);border:1px solid #16a34a;border-radius:10px;padding:8px 10px;color:#86efac;font-size:10px;font-weight:500;line-height:1.5;}
+.tt-days.single .tt-rotc{font-size:12px;padding:11px 12px;}
+.tt-weekend{background:linear-gradient(145deg,#2e1065,#3b0764);border:1px solid #7c3aed;border-radius:10px;padding:12px 14px;margin-top:14px;}
+.tt-weekend-title{font-size:11px;font-weight:700;color:#d8b4fe;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;}
+.tt-weekend-item{display:flex;gap:8px;align-items:flex-start;}
+.tt-weekend-badge{background:#7c3aed;color:#fff;border-radius:6px;padding:3px 8px;font-size:9px;font-weight:700;white-space:nowrap;flex-shrink:0;}
+.tt-weekend-info{font-size:11px;color:#c4b5fd;line-height:1.6;}
+.tt-legend-wrap{background:var(--s1);border:1px solid var(--b1);border-radius:12px;padding:12px 14px;margin-top:12px;}
+.tt-legend-title{font-size:10px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+.tt-legend{display:flex;flex-wrap:wrap;gap:5px;}
+.tt-li{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--t1);background:var(--s2);border:1px solid var(--b1);border-radius:20px;padding:3px 10px;}
+.tt-ld{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.tt-note{font-size:10px;color:var(--t3);margin-top:10px;line-height:1.9;padding-bottom:8px;}
+</style>
 </head>
-<body class="week-a">
-<div class="wrap">
-
-  <!-- Controls -->
-  <div class="controls">
-    <button class="btn-full" onclick="showFull()">
-      <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-        <rect x=".5" y=".5" width="6" height="6" rx="1.5" fill="white" opacity=".9"/>
-        <rect x="8.5" y=".5" width="6" height="6" rx="1.5" fill="white" opacity=".9"/>
-        <rect x=".5" y="8.5" width="6" height="6" rx="1.5" fill="white" opacity=".9"/>
-        <rect x="8.5" y="8.5" width="6" height="6" rx="1.5" fill="white" opacity=".9"/>
-      </svg>
-      ดูตารางเต็ม
+<body>
+<div class="app">
+  <div class="hdr">
+    <div class="hdr-logo">Discipline<span>OS</span></div>
+    <div class="hdr-date" id="hdr-date"></div>
+  </div>
+  <div class="content" id="content"></div>
+  <div class="tabbar">
+    <button class="tb on" id="tb-tasks" onclick="go('tasks')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 5H6a2 2 0 00-2 2v11a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-3"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12l2 2 4-4"/></svg>
+      Tasks
     </button>
-    <div class="select-wrap">
-      <select id="day-select" onchange="filterDay(this.value)">
-        <option value="">— เลือกวัน —</option>
-        <option value="mon">วันจันทร์</option>
-        <option value="tue">วันอังคาร</option>
-        <option value="wed">วันพุธ</option>
-        <option value="thu">วันพฤหัสบดี</option>
-        <option value="fri">วันศุกร์</option>
-      </select>
-      <span class="select-arrow">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </span>
-    </div>
-    <div class="week-toggle">
-      <button class="week-btn a active" id="btn-week-a" onclick="setWeek('a')">
-        <span class="dot"></span> สัปดาห์ A
-      </button>
-      <div class="week-divider"></div>
-      <button class="week-btn b" id="btn-week-b" onclick="setWeek('b')">
-        <span class="dot"></span> สัปดาห์ B
-      </button>
-    </div>
+    <button class="tb" id="tb-habits" onclick="go('habits')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
+      Habits
+    </button>
+    <button class="tb" id="tb-timetable" onclick="go('timetable')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      ตาราง
+    </button>
+    <button class="tb" id="tb-settings" onclick="go('settings')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      Settings
+    </button>
   </div>
+</div>
 
-  <!-- Day heading -->
-  <div class="day-heading" id="day-heading">
-    <div class="day-pill"    id="day-pill-th"></div>
-    <div class="day-pill-en" id="day-pill-en"></div>
-  </div>
-
-  <!-- Timetable -->
-  <div class="days full" id="days-grid">
-
-    <!-- ══ จันทร์ ══ -->
-    <div class="col" data-day="mon">
-      <div class="col-head"><div class="dow">จันทร์</div><div class="doe">Monday</div></div>
-      <div class="blocks">
-
-        <div class="card bio">
-          <div class="card-inner">
-            <div class="card-top">
-              <div class="card-time">09:00 – 10:20</div>
-              <div class="credit">1.0 หน่วย</div>
-            </div>
-            <div class="card-code">ว30125</div>
-            <div class="card-name">ความหลากหลายทางชีวภาพ</div>
-            <div class="card-teacher">อ.ภัทรญา</div>
-            <div class="card-room">3405</div>
-          </div>
-        </div>
-
-        <div class="card eng">
-          <div class="card-inner">
-            <div class="card-top">
-              <div class="card-time">10:30 – 11:50</div>
-              <div class="credit">1.5 หน่วย</div>
-            </div>
-            <div class="card-code">อ30114</div>
-            <div class="card-name">ภาษาอังกฤษวิชาการ 2</div>
-            <div class="card-teacher">T.Darunee / T.Patipat / T.Elizabeth · IB</div>
-          </div>
-        </div>
-
-        <div class="lunch-card">🍱 พักกลางวัน · 11:50 – 12:50</div>
-        <div class="act-card">12:50 – 14:10 · ว่าง</div>
-
-        <div class="card hpe">
-          <div class="card-inner">
-            <div class="card-top">
-              <div class="card-time">14:20 – 15:40</div>
-              <div class="credit">1.0 หน่วย</div>
-            </div>
-            <div class="card-code">พ30201</div>
-            <div class="card-name">กีฬาประเภททีม</div>
-            <div class="card-teacher">อ.จิรพนธ์</div>
-            <div class="card-room">ศูนย์กีฬา ชั้น 4</div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ══ อังคาร ══ -->
-    <div class="col" data-day="tue">
-      <div class="col-head"><div class="dow">อังคาร</div><div class="doe">Tuesday</div></div>
-      <div class="blocks">
-
-        <div class="card com">
-          <div class="card-inner">
-            <div class="card-top">
-              <div class="card-time">09:00 – 10:20</div>
-              <div class="credit">1.0 หน่วย</div>
-            </div>
-            <div class="card-code">ว30149 · กลุ่ม 4 COM</div>
-            <div class="card-name">สัมมนาคอมพิวเตอร์</div>
-            <div class="card-teacher">อ.ศิริพร ศักดิ์บุญญารัตน์</div>
-            <div class="card-room">1202</div>
-          </div>
-        </div>
-
-        <div class="act-card">10:30 – 11:50 · ว่าง</div>
-        <div class="lunch-card">🍱 พักกลางวัน · 11:50 – 12:50</div>
-
-        <div class="card tha">
-          <div class="card-inner">
-            <div class="card-top">
-              <div class="card-time">12:50 – 14:10</div>
-              <div class="credit">1.0 หน่วย</div>
-            </div>
-            <div class="card-code">ท30105</div>
-            <div class="card-name">หลักภาษาไทยในชีวิตประจำวัน</div>
-            <div class="card-teacher">อ.ธวัชชัย สุลาลัย</div>
-            <div class="card-room">1605</div>
-          </div>
-        </div>
-
-        <div class="act-card">14:20 – 15:40 · ว่าง</div>
-        <div class="act-card">15:50 – 16:30 · กิจกรรมพัฒนาผู้เรียน</div>
-
-      </div>
-    </div>
-
-    <!-- ══ พุธ ══ -->
-    <div class="col" data-day="wed">
-      <div class="col-head"><div class="dow">พุธ</div><div class="doe">Wednesday</div></div>
-      <div class="blocks">
-
-        <!-- 08:30–09:50 เป็นคู่ A/B -->
-        <div class="card phy" data-week="a">
-          <div class="card-inner">
-            <div class="card-top">
-              <div class="card-time">08:30 – 09:50</div>
-              <div style="display:flex;gap:4px;align-items:center">
-                <div class="week-badge">สัปดาห์ A</div>
-                <div class="credit">0.5 หน่วย</div>
-              </div>
-            </div>
-            <div class="card-code">ว30106</div>
-            <div class="card-name">ดาราศาสตร์พื้นฐาน</div>
-            <div class="card-teacher">อ.กมลพร</div>
-            <div class="card-room">3605</div>
-          </div>
-        </div>
-
-        <div class="card soc" data-week="b">
-          <div class="card-inner">
-            <div class="card-top">
-              <div class="card-time">08:30 – 09:50</div>
-              <div style="display:flex;gap:4px;align-items:center">
-                <div class="week-badge">สัปดาห์ B</div>
-                <div class="credit">0.5 หน่วย</div>
-              </div>
-            </div>
-            <div class="card-code">ส30109</div>
-            <div class="card-name">หน้าที่พลเมือง</div>
-            <div class="card-teacher">อ.อภิรักษ์</div>
-            <div class="card-room">1503</div>
-          </div>
-        </div>
-
-        <div class="card bio">
-          <div class="card-inner">
-            <div class="card-top">
-              <div class="card-time">10:00 – 11:20</div>
-              <div class="credit">1.0 หน่วย</div>
-            </div>
-            <div class="card-code">ว30617</div>
-            <div class="card-name">หลักการเลี้ยงสัตว์</div>
-            <div class="card-teacher">อ.เมษสุวัลย์</div>
-            <div class="card-room">3403</div>
-          </div>
-        </div>
-
-        <div class="lunch-card">🍱 พักกลางวัน · 11:20 – 12:20</div>
-        <div class="rotc-card">🪖 กิจกรรมนักศึกษาวิชาทหาร<br>12:20 เป็นต้นไป</div>
-
-      </div>
-    </div>
-
-    <!-- ══ พฤหัสบดี ══ -->
-    <div class="col" data-day="thu">
-      <div class="col-head"><div class="dow">พฤหัสฯ</div><div class="doe">Thursday</div></div>
-      <div class="blocks">
-
-        <div class="card mth">
-          <div class="card-inner">
-            <div class="card-top">
-              <div class="card-time">08:30 – 09:50</div>
-              <div class="credit">1.0 หน่วย</div>
-            </div>
-            <div class="card-code">ค30107</div>
-            <div class="card-name">แคลคูลัสและการประยุกต์</div>
-            <div class="card-teacher">อ.ฐิติพงศ์</div>
-            <div class="card-room">1302</div>
-          </div>
-        </div>
-
-        <!-- 10:00–11:20 เป็นคู่ A/B -->
-        <div class="card eng" data-week="a">
-          <div class="card-inner">
-            <div class="card-top">
-              <div class="card-time">10:00 – 11:20</div>
-              <div style="display:flex;gap:4px;align-items:center">
-                <div class="week-badge">สัปดาห์ A</div>
-                <div class="credit" style="opacity:.55;font-size:8px">รวม จ.</div>
-              </div>
-            </div>
-            <div class="card-code">อ30114</div>
-            <div class="card-name">ภาษาอังกฤษวิชาการ 2</div>
-            <div class="card-teacher">T.Darunee / T.Patipat / T.Elizabeth · IB</div>
-          </div>
-        </div>
-
-        <div class="card art" data-week="b">
-          <div class="card-inner">
-            <div class="card-top">
-              <div class="card-time">10:00 – 11:20</div>
-              <div style="display:flex;gap:4px;align-items:center">
-                <div class="week-badge">สัปดาห์ B</div>
-                <div class="credit">0.5 หน่วย</div>
-              </div>
-            </div>
-            <div class="card-code">ศ30105</div>
-            <div class="card-name">ทัศนศิลป์</div>
-            <div class="card-teacher">อ.มานนท์</div>
-            <div class="card-room">1108</div>
-          </div>
-        </div>
-
-        <div class="lunch-card">🍱 พักกลางวัน · 11:20 – 12:20</div>
-        <div class="act-card">12:20 – 13:00 · ว่าง</div>
-
-        <div class="card hpe">
-          <div class="card-inner">
-            <div class="card-top">
-              <div class="card-time">13:00 – 13:40</div>
-              <div class="credit">0.5 หน่วย</div>
-            </div>
-            <div class="card-code">พ30105</div>
-            <div class="card-name">สุขศึกษาและพลศึกษา 5</div>
-            <div class="card-teacher">อ.สุชาวดี + อ.อาริตา</div>
-            <div class="card-room">ศูนย์กีฬา ชั้น 2</div>
-          </div>
-        </div>
-
-        <div class="card sci">
-          <div class="card-inner">
-            <div class="card-top">
-              <div class="card-time">13:50 – 14:30</div>
-              <div class="credit">0.5 หน่วย</div>
-            </div>
-            <div class="card-code">ว30148</div>
-            <div class="card-name">โครงงานวิทยาศาสตร์ 3</div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ══ ศุกร์ ══ -->
-    <div class="col" data-day="fri">
-      <div class="col-head"><div class="dow">ศุกร์</div><div class="doe">Friday</div></div>
-      <div class="blocks">
-
-        <div class="card phy">
-          <div class="card-inner">
-            <div class="card-top">
-              <div class="card-time">08:30 – 09:50</div>
-              <div class="credit">1.0 หน่วย</div>
-            </div>
-            <div class="card-code">ว30105</div>
-            <div class="card-name">ฟิสิกส์ยุคใหม่</div>
-            <div class="card-teacher">อ.รุ่งโรจน์</div>
-            <div class="card-room">3703</div>
-          </div>
-        </div>
-
-        <div class="card soc">
-          <div class="card-inner">
-            <div class="card-top">
-              <div class="card-time">10:00 – 11:20</div>
-              <div class="credit">1.0 หน่วย</div>
-            </div>
-            <div class="card-code">ส30108</div>
-            <div class="card-name">ศิลปศาสตร์ศึกษา 5</div>
-            <div class="card-teacher">อ.วิสิทธิ์</div>
-            <div class="card-room">1601</div>
-          </div>
-        </div>
-
-        <div class="lunch-card">🍱 พักกลางวัน · 11:20 – 12:20</div>
-        <div class="act-card">12:20 – 13:40 · ว่าง</div>
-
-        <div class="card kor">
-          <div class="card-inner">
-            <div class="card-top">
-              <div class="card-time">13:50 – 15:10</div>
-              <div class="credit">1.5 หน่วย</div>
-            </div>
-            <div class="card-code">ต30202</div>
-            <div class="card-name">ภาษาเกาหลีขั้นต้น 2</div>
-            <div class="card-teacher">Mr. Gwangjil Jang</div>
-            <div class="card-room">1104</div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-  </div><!-- .days -->
-
-  <!-- Weekend -->
-  <div class="weekend-card">
-    <div class="weekend-title">🌿 วิชานอกตาราง (Mini-course / วันหยุด)</div>
-    <div class="weekend-item">
-      <div class="weekend-badge">ว30801</div>
-      <div class="weekend-info">
-        <strong>หัวข้อพิเศษ 1 — อนุกรมวิธานกับพฤกษาหาร</strong><br>
-        อ.จิโรจน์ แสงรัตนประเสริฐ · ห้อง 3401 และห้องครัว<br>
-        <span style="opacity:.7">Mini-course เรียนนอกเวลา/วันหยุด · 1.0 หน่วยกิต</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Legend -->
-  <div class="legend-wrap">
-    <div class="legend-title">สีวิชา · ระบบสัปดาห์ A/B</div>
-    <div class="legend">
-      <div class="li"><div class="ld" style="background:#10b981"></div>ชีววิทยา</div>
-      <div class="li"><div class="ld" style="background:#3b82f6"></div>ฟิสิกส์ / ดาราศาสตร์</div>
-      <div class="li"><div class="ld" style="background:#f59e0b"></div>คณิตศาสตร์</div>
-      <div class="li"><div class="ld" style="background:#ef4444"></div>ภาษาไทย</div>
-      <div class="li"><div class="ld" style="background:#818cf8"></div>ภาษาอังกฤษ</div>
-      <div class="li"><div class="ld" style="background:#22c55e"></div>สังคมศึกษา</div>
-      <div class="li"><div class="ld" style="background:#ec4899"></div>ศิลปะ</div>
-      <div class="li"><div class="ld" style="background:#f97316"></div>พลศึกษา</div>
-      <div class="li"><div class="ld" style="background:#94a3b8"></div>โครงงาน</div>
-      <div class="li"><div class="ld" style="background:#38bdf8"></div>คอมพิวเตอร์</div>
-      <div class="li"><div class="ld" style="background:#eab308"></div>ภาษาเกาหลี</div>
-      <div class="li"><div class="ld" style="background:var(--week-a)"></div>badge ม่วง = สัปดาห์ A</div>
-      <div class="li"><div class="ld" style="background:var(--week-b)"></div>badge น้ำเงิน = สัปดาห์ B</div>
-    </div>
-  </div>
-
-  <p class="note">
-    ⚑ <strong>ช่อง A/B สลับสัปดาห์ 2 จุด:</strong><br>
-    &nbsp;&nbsp;• พุธ 08:30–09:50 → สัปดาห์ A = ดาราศาสตร์ (ว30106) | สัปดาห์ B = หน้าที่พลเมือง (ส30109)<br>
-    &nbsp;&nbsp;• พฤหัส 10:00–11:20 → สัปดาห์ A = อังกฤษวิชาการ (อ30114) | สัปดาห์ B = ทัศนศิลป์ (ศ30105)<br>
-    ⚑ พฤหัส 13:00–13:40 = พลศึกษา (พ30105) · 13:50–14:30 = โครงงาน (ว30148) ทุกสัปดาห์ 40 นาที<br>
-    ⚑ จันทร์–อังคาร เริ่ม 09:00 น. / พุธ–ศุกร์ เริ่ม 08:30 น.<br>
-    ⚑ ว30617 หลักการเลี้ยงสัตว์ เรียนทุกพุธ 10:00–11:20 (ไม่สลับสัปดาห์)
-  </p>
-
+<!-- Phone Jail -->
+<div class="jail-over" id="jail">
+  <div class="jail-em">🔒</div>
+  <div class="jail-title">Phone Jail</div>
+  <div class="jail-timer" id="jail-t">25:00</div>
+  <div class="jail-msg">สู้อีกนิดนึง!<br>ออกจาก focus ตอนนี้ถือว่าแพ้</div>
+  <button class="jail-quit" onclick="exitJail()">ยอมแพ้ (unlock)</button>
 </div>
 
 <script>
-  const dayMeta = {
-    mon: { th: 'วันจันทร์',    en: 'Monday' },
-    tue: { th: 'วันอังคาร',    en: 'Tuesday' },
-    wed: { th: 'วันพุธ',       en: 'Wednesday' },
-    thu: { th: 'วันพฤหัสบดี', en: 'Thursday' },
-    fri: { th: 'วันศุกร์',     en: 'Friday' },
+// ═══════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════
+const DEFAULT_HABITS=[
+  {id:1,n:'ทบทวนวิชา 1 ชั่วโมง'},
+  {id:2,n:'ไม่แตะโทรศัพท์ระหว่าง focus'},
+  {id:3,n:'ออกกำลังกาย'},
+  {id:4,n:'นอนก่อน 23:00'},
+  {id:5,n:'วางแผนวันถัดไปก่อนนอน'},
+];
+let S={
+  tab:'tasks',
+  priFilter:'all',
+  habits:null,
+  comps:{},       // {YYYY-MM-DD:[id,...]}
+  nTasks:[],      // notion tasks
+  pomo:{run:false,mode:'focus',sec:25*60,sess:0},
+  jail:false,
+  cfg:{token:'',dbId:'9e00343d-7302-40ba-ae96-edbfce8f6a1f',workerUrl:''},
+  sync:{status:'ยังไม่ได้ sync',at:null,loading:false},
+  _tmr:null
+};
+
+// ═══════════════════════════════════════
+//  STORAGE
+// ═══════════════════════════════════════
+function load(){
+  try{
+    const d=JSON.parse(localStorage.getItem('disc-os-v1')||'{}');
+    S.habits=d.habits||JSON.parse(JSON.stringify(DEFAULT_HABITS));
+    S.comps=d.comps||{};
+    S.nTasks=d.nTasks||[];
+    S.pomo.sess=d.sess||0;
+    if(d.cfg)Object.assign(S.cfg,d.cfg);
+    if(d.syncAt){S.sync.at=d.syncAt;S.sync.status='sync '+relTime(d.syncAt);}
+  }catch{S.habits=JSON.parse(JSON.stringify(DEFAULT_HABITS));}
+}
+function save(){
+  try{localStorage.setItem('disc-os-v1',JSON.stringify({
+    habits:S.habits,comps:S.comps,nTasks:S.nTasks,sess:S.pomo.sess,
+    cfg:S.cfg,syncAt:S.sync.at
+  }));}catch{}
+}
+function relTime(iso){
+  if(!iso)return'';
+  const m=(Date.now()-new Date(iso))/60000;
+  if(m<2)return'เมื่อกี้';
+  if(m<60)return Math.round(m)+' นาทีที่แล้ว';
+  return Math.round(m/60)+' ชม.ที่แล้ว';
+}
+function today(){return new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Bangkok'});}
+function thaiDate(){
+  return new Date().toLocaleDateString('th-TH',{weekday:'short',day:'numeric',month:'short'});
+}
+function fmt(s){
+  return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+}
+
+// ═══════════════════════════════════════
+//  HABITS
+// ═══════════════════════════════════════
+function getStreak(id){
+  let n=0,d=new Date();d.setDate(d.getDate()-1);
+  while(n<365){
+    const k=d.toISOString().slice(0,10);
+    if(!(S.comps[k]||[]).includes(id))break;
+    n++;d.setDate(d.getDate()-1);
+  }
+  if((S.comps[today()]||[]).includes(id))n++;
+  return n;
+}
+function toggleHabit(id){
+  const t=today(),c=S.comps[t]||[];
+  S.comps[t]=c.includes(id)?c.filter(x=>x!==id):[...c,id];
+  save();render();
+}
+function delHabit(id,e){e.stopPropagation();S.habits=S.habits.filter(h=>h.id!==id);save();render();}
+function addHabit(){
+  const el=document.getElementById('h-in');
+  if(!el||!el.value.trim())return;
+  S.habits.push({id:Date.now(),n:el.value.trim()});el.value='';
+  save();render();
+}
+
+// ═══════════════════════════════════════
+//  POMODORO
+// ═══════════════════════════════════════
+function startPomo(){
+  clearInterval(S._tmr);S.pomo.run=true;
+  S._tmr=setInterval(()=>{
+    if(S.pomo.sec<=1){
+      clearInterval(S._tmr);S.pomo.run=false;
+      const wasFocus=S.pomo.mode==='focus';
+      if(wasFocus){S.pomo.sess++;save();}
+      S.pomo.mode=wasFocus?'break':'focus';
+      S.pomo.sec=S.pomo.mode==='focus'?S.cfg.pDur*60:S.cfg.bDur*60;
+      if(S.jail){exitJail();}
+      render();return;
+    }
+    S.pomo.sec--;tickUI();
+  },1000);render();
+}
+function stopPomo(){clearInterval(S._tmr);S.pomo.run=false;render();}
+function resetPomo(){clearInterval(S._tmr);S.pomo.run=false;S.pomo.mode='focus';S.pomo.sec=S.cfg.pDur*60;render();}
+function swapMode(){
+  clearInterval(S._tmr);S.pomo.run=false;
+  S.pomo.mode=S.pomo.mode==='focus'?'break':'focus';
+  S.pomo.sec=S.pomo.mode==='focus'?S.cfg.pDur*60:S.cfg.bDur*60;
+  render();
+}
+function enableJail(){
+  if(!S.pomo.run){alert('กด เริ่ม ก่อนนะ 🙂');return;}
+  S.jail=true;
+  document.getElementById('jail').classList.add('show');
+  tickUI();
+}
+function exitJail(){
+  S.jail=false;stopPomo();
+  document.getElementById('jail').classList.remove('show');
+}
+function tickUI(){
+  const t=fmt(S.pomo.sec);
+  const te=document.getElementById('pomo-t');
+  const je=document.getElementById('jail-t');
+  const arc=document.getElementById('parc');
+  if(te)te.textContent=t;
+  if(je)je.textContent=t;
+  if(arc){
+    const tot=S.pomo.mode==='focus'?S.cfg.pDur*60:S.cfg.bDur*60;
+    const pct=1-S.pomo.sec/tot;
+    const r=85,c=2*Math.PI*r;
+    arc.setAttribute('stroke-dashoffset',c*(1-pct));
+  }
+}
+
+// ── Habit Drag & Drop ──
+let HD={on:false,id:null,ghost:null,src:null,over:null,pos:'above',startY:0,originTop:0,touchY:0,rafId:null};
+
+function initHabitDrag(){
+  document.querySelectorAll('[data-hdrag]').forEach(h=>{
+    h.addEventListener('touchstart',e=>hDragStart(e,h.dataset.hdrag),{passive:false});
+  });
+}
+
+function hDragStart(e,id){
+  e.preventDefault();
+  const row=document.querySelector(`.h-row[data-hid="${id}"]`);
+  if(!row)return;
+  const touch=e.touches[0];
+  const rect=row.getBoundingClientRect();
+  const g=row.cloneNode(true);
+  g.style.cssText=`position:fixed;top:${rect.top}px;left:${rect.left}px;width:${rect.width}px;`+
+    `z-index:999;pointer-events:none;background:#2c2c2e;border-radius:10px;`+
+    `box-shadow:0 12px 40px rgba(0,0,0,.6);opacity:.9;`;
+  document.body.appendChild(g);
+  HD={on:true,id,ghost:g,src:row,over:null,pos:'above',startY:touch.clientY,originTop:rect.top,touchY:touch.clientY,rafId:null};
+  row.classList.add('dragging');
+  document.addEventListener('touchmove',hDragMove,{passive:false});
+  document.addEventListener('touchend',hDragEnd,{passive:true});
+}
+
+function hDragMove(e){
+  if(!HD.on)return;
+  e.preventDefault();
+  HD.touchY=e.touches[0].clientY;
+  HD.ghost.style.top=(HD.originTop+(HD.touchY-HD.startY))+'px';
+  cancelAnimationFrame(HD.rafId);
+  HD.rafId=requestAnimationFrame(()=>{
+    const rows=[...document.querySelectorAll('.h-row[data-hid]')];
+    rows.forEach(r=>r.classList.remove('drop-above','drop-below'));
+    let found=null,pos='above';
+    for(const r of rows){
+      if(r===HD.src)continue;
+      const b=r.getBoundingClientRect();
+      if(HD.touchY>=b.top&&HD.touchY<=b.bottom){
+        found=r;pos=HD.touchY<b.top+b.height/2?'above':'below';break;
+      }
+    }
+    if(found)found.classList.add(pos==='above'?'drop-above':'drop-below');
+    HD.over=found;HD.pos=pos;
+  });
+}
+
+function hDragEnd(){
+  if(!HD.on)return;
+  HD.on=false;
+  document.removeEventListener('touchmove',hDragMove);
+  document.removeEventListener('touchend',hDragEnd);
+  cancelAnimationFrame(HD.rafId);
+  if(HD.ghost)HD.ghost.remove();
+  document.querySelectorAll('.h-row').forEach(r=>r.classList.remove('dragging','drop-above','drop-below'));
+  if(HD.over&&HD.over!==HD.src){
+    const toId=parseInt(HD.over.dataset.hid);
+    const fi=S.habits.findIndex(h=>h.id===parseInt(HD.id));
+    const ti=S.habits.findIndex(h=>h.id===toId);
+    if(fi!==-1&&ti!==-1){
+      const [moved]=S.habits.splice(fi,1);
+      const ins=HD.pos==='above'?ti:ti+1;
+      S.habits.splice(fi<ti?ins-1:ins,0,moved);
+      save();
+    }
+  }
+  HD={on:false,id:null,ghost:null,src:null,over:null,pos:'above',startY:0,originTop:0,touchY:0,rafId:null};
+  render();
+}
+
+// ═══════════════════════════════════════
+//  NOTION via Cloudflare Worker proxy
+// ═══════════════════════════════════════
+async function notionFetch(path, method, body){
+  const base = (S.cfg.workerUrl||'').replace(/\/$/,'');
+  if(!base) throw new Error('ยังไม่ได้ตั้งค่า Worker URL');
+  const headers = {
+    'Notion-Version':'2022-06-28',
+    'Content-Type':'application/json',
   };
+  // Only send token if set in app (optional if worker has NOTION_TOKEN secret)
+  if(S.cfg.token) headers['Authorization'] = 'Bearer '+S.cfg.token;
+  const r = await fetch(base + path, {
+    method, headers,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const data = await r.json();
+  if(!r.ok) throw new Error(data.message || r.status);
+  return data;
+}
 
-  const grid    = document.getElementById('days-grid');
-  const heading = document.getElementById('day-heading');
-  const pillTh  = document.getElementById('day-pill-th');
-  const pillEn  = document.getElementById('day-pill-en');
-  const select  = document.getElementById('day-select');
-
-  function showFull() {
-    grid.className = 'days full';
-    heading.classList.remove('visible');
-    select.value = '';
+async function syncNotion(){
+  if(!S.cfg.workerUrl){alert('กรอก Worker URL ใน Settings ก่อน');go('settings');return;}
+  S.sync.loading=true;S.sync.status='กำลัง sync...';render();
+  try{
+    const data = await notionFetch('/databases/'+S.cfg.dbId+'/query','POST',{
+      filter:{and:[
+        {property:'Done',checkbox:{equals:false}},
+        {property:'Date',date:{equals:today()}}
+      ]},
+      sorts:[{property:'priority',direction:'descending'}],
+      page_size:50
+    });
+    S.nTasks = data.results.map(p=>({
+      id: p.id,
+      title: p.properties.Name?.title?.[0]?.plain_text || '(ไม่มีชื่อ)',
+      done: false,
+      priority: p.properties.priority?.status?.name || '!',
+      date: p.properties.Date?.date?.start || null
+    }));
+    S.sync.at = new Date().toISOString();
+    S.sync.status = 'sync '+relTime(S.sync.at);
+    save();
+  }catch(e){
+    S.sync.status = 'Error: '+e.message;
   }
+  S.sync.loading=false;render();
+}
 
-  function filterDay(val) {
-    if (!val) { showFull(); return; }
-    grid.className = 'days single';
-    document.querySelectorAll('.col').forEach(c => c.classList.remove('active'));
-    const target = document.querySelector(`.col[data-day="${val}"]`);
-    if (target) target.classList.add('active');
-    pillTh.textContent = dayMeta[val].th;
-    pillEn.textContent = dayMeta[val].en;
-    heading.classList.add('visible');
+async function doneNotion(id){doneTask(id);}
+
+// ═══════════════════════════════════════
+//  ROUTING & RENDER
+// ═══════════════════════════════════════
+function go(tab){
+  S.tab=tab;
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));
+  const b=document.getElementById('tb-'+tab);if(b)b.classList.add('on');
+  render();
+}
+
+function render(){
+  const el=document.getElementById('content');
+  if(!el)return;
+  switch(S.tab){
+    case'habits':el.innerHTML=rHabits();setTimeout(initHabitDrag,10);break;
+    case'timetable':el.innerHTML=rTimetable();ttInit();break;
+    case'tasks':el.innerHTML=rTasks();setTimeout(initDrag,10);break;
+    case'settings':el.innerHTML=rSettings();break;
   }
+}
 
-  function setWeek(w) {
-    document.body.className = 'week-' + w;
-    document.getElementById('btn-week-a').className = 'week-btn a' + (w==='a' ? ' active' : '');
-    document.getElementById('btn-week-b').className = 'week-btn b' + (w==='b' ? ' active' : '');
+// ── Habits ──
+function rHabits(){
+  const t=today();
+  const done=(S.comps[t]||[]);
+  const tot=S.habits.length;
+  const pct=tot?Math.round(done.length/tot*100):0;
+  const maxStr=S.habits.reduce((m,h)=>Math.max(m,getStreak(h.id)),0);
+  return`
+<div class="stats">
+  <div class="stat"><div class="stat-n">${done.length}/${tot}</div><div class="stat-l">วันนี้</div></div>
+  <div class="stat"><div class="stat-n">${maxStr||'—'}</div><div class="stat-l">streak สูงสุด 🔥</div></div>
+  <div class="stat"><div class="stat-n">${pct}%</div><div class="stat-l">progress</div></div>
+</div>
+<div class="prog-wrap"><div class="prog" style="width:${pct}%"></div></div>
+<div class="card">
+${S.habits.length===0?'<div class="empty">ยังไม่มี habit<br>เพิ่มด้านล่างได้เลย</div>':''}
+${S.habits.map(h=>{
+  const isDone=done.includes(h.id);
+  const str=getStreak(h.id);
+  return`<div class="h-row" data-hid="${h.id}">
+    <div class="h-handle" data-hdrag="${h.id}">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <line x1="3" y1="5" x2="13" y2="5"/><line x1="3" y1="8" x2="13" y2="8"/><line x1="3" y1="11" x2="13" y2="11"/>
+      </svg>
+    </div>
+    <div class="chk${isDone?' on':''}" onclick="toggleHabit(${h.id})"></div>
+    <span class="h-label${isDone?' on':''}" onclick="toggleHabit(${h.id})">${h.n}</span>
+    ${str>0?`<span class="streak">${str}🔥</span>`:''}
+    <button class="del-btn" onclick="delHabit(${h.id},event)">×</button>
+  </div>`;
+}).join('')}
+</div>
+<div class="add-row">
+  <input class="add-in" id="h-in" placeholder="เพิ่ม habit ใหม่..." onkeydown="if(event.key==='Enter')addHabit()">
+  <button class="add-btn" onclick="addHabit()">+</button>
+</div>`;
+}
+
+// ── Focus ──
+function rFocus(){
+  const tot=S.pomo.mode==='focus'?S.cfg.pDur*60:S.cfg.bDur*60;
+  const pct=1-S.pomo.sec/tot;
+  const r=85,c=2*Math.PI*r;
+  const col=S.pomo.mode==='focus'?'#30d158':'#ffd60a';
+  return`
+<div class="pomo-wrap">
+  <svg class="pomo-ring" width="220" height="220" viewBox="0 0 220 220">
+    <circle cx="110" cy="110" r="${r}" fill="none" stroke="#1c1c1e" stroke-width="12"/>
+    <circle id="parc" cx="110" cy="110" r="${r}" fill="none" stroke="${col}" stroke-width="12"
+      stroke-dasharray="${c}" stroke-dashoffset="${c*(1-pct)}"
+      stroke-linecap="round" transform="rotate(-90 110 110)" style="transition:stroke-dashoffset .6s cubic-bezier(.4,0,.2,1)"/>
+    <text id="pomo-t" x="110" y="102" text-anchor="middle" fill="#f5f5f5"
+      font-size="52" font-weight="200" font-family="-apple-system,sans-serif"
+      letter-spacing="-2" style="font-variant-numeric:tabular-nums">${fmt(S.pomo.sec)}</text>
+    <text x="110" y="128" text-anchor="middle" fill="#8e8e93"
+      font-size="11" font-family="-apple-system,sans-serif"
+      letter-spacing="2">${S.pomo.mode==='focus'?'FOCUS':'BREAK'}</text>
+  </svg>
+  <div class="pomo-btns">
+    <button class="p-btn" onclick="swapMode()">${S.pomo.mode==='focus'?'→ Break':'→ Focus'}</button>
+    <button class="p-btn primary" onclick="${S.pomo.run?'stopPomo()':'startPomo()'}">${S.pomo.run?'⏸ หยุด':'▶ เริ่ม'}</button>
+    <button class="p-btn" onclick="resetPomo()">↺</button>
+  </div>
+  <div class="pomo-sess">${S.pomo.sess} session เสร็จวันนี้</div>
+  <button class="jail-btn${S.jail?' hot':''}" onclick="enableJail()">
+    🔒 ${S.jail?'Phone Jail กำลังทำงาน':'เปิด Phone Jail Mode'}
+  </button>
+</div>`;
+}
+
+// ── Tasks ──
+const PRI_CYCLE={'!!!':'!!','!!':'!','!':'!!!'};
+function priTag(id,p){
+  if(p==='!!!')return`<span class="pri pri-h" onclick="cyclePri('${id}')">!!!</span>`;
+  if(p==='!!')return`<span class="pri pri-m" onclick="cyclePri('${id}')">!!</span>`;
+  return`<span class="pri pri-l" onclick="cyclePri('${id}')">!</span>`;
+}
+function cyclePri(id){
+  const t=S.nTasks.find(t=>t.id==id);
+  if(!t)return;
+  t.priority=PRI_CYCLE[t.priority]||'!!!';
+  save();render();
+  // sync to Notion if not a local task
+  if(!t.local&&S.cfg.workerUrl){
+    const propVal=t.priority==='!!!'?'!!!':(t.priority==='!!'?'!!':'!');
+    notionFetch('/pages/'+id,'PATCH',{properties:{priority:{status:{name:propVal}}}}).catch(()=>{});
   }
+}
+async function addLocalTask(){
+  const el=document.getElementById('t-add-in');
+  const priEl=document.getElementById('t-add-pri');
+  if(!el||!el.value.trim())return;
+  const title=el.value.trim();
+  const priority=priEl?.value||'!!';
+  const tmpId='local-'+Date.now();
+  S.nTasks.unshift({id:tmpId,title,done:false,priority,local:true,date:today()});
+  el.value='';save();render();setTimeout(initDrag,10);
+  // Push to Notion if worker configured
+  if(S.cfg.workerUrl){
+    try{
+      const res=await notionFetch('/pages','POST',{
+        parent:{database_id:S.cfg.dbId},
+        properties:{
+          Name:{title:[{text:{content:title}}]},
+          Done:{checkbox:false},
+          priority:{status:{name:priority}},
+          Date:{date:{start:today()}}
+        }
+      });
+      if(res.id){
+        // Replace tmpId with real Notion page id
+        S.nTasks=S.nTasks.map(t=>t.id===tmpId?{...t,id:res.id,local:false}:t);
+        save();render();setTimeout(initDrag,10);
+      }
+    }catch(e){
+      // Keep as local if Notion fails
+      console.warn('Notion create failed:',e.message);
+    }
+  }
+}
+function delTask(id,e){
+  e.stopPropagation();
+  S.nTasks=S.nTasks.filter(t=>t.id!=id);
+  save();render();setTimeout(initDrag,10);
+}
+function doneTask(id){
+  S.nTasks=S.nTasks.map(t=>t.id==id?{...t,done:true}:t);
+  save();render();
+  const t=S.nTasks.find(x=>x.id==id);
+  if(t&&!t.local&&S.cfg.workerUrl){
+    notionFetch('/pages/'+id,'PATCH',{properties:{Done:{checkbox:true}}}).catch(()=>{});
+  }
+}
 
-  // Auto-select today — ใช้เวลากรุงเทพ (UTC+7) แทน UTC
-  const todayMap = { 1:'mon', 2:'tue', 3:'wed', 4:'thu', 5:'fri' };
-  const bkkDay = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' })).getDay();
-  const todayKey = todayMap[bkkDay];
-  if (todayKey) { select.value = todayKey; filterDay(todayKey); }
+// ── Drag & Drop ──
+let DG={on:false,id:null,ghost:null,src:null,over:null,pos:'above',startY:0,rafId:null,touchY:0};
+
+function initDrag(){
+  document.querySelectorAll('[data-drag]').forEach(handle=>{
+    handle.addEventListener('touchstart',e=>dragStart(e,handle.dataset.drag),{passive:false});
+  });
+}
+
+function dragStart(e,id){
+  e.preventDefault();
+  const row=document.querySelector(`.t-row[data-id="${id}"]`);
+  if(!row)return;
+  const touch=e.touches[0];
+  DG={on:true,id,src:row,over:null,pos:'above',startY:touch.clientY,touchY:touch.clientY,ghost:null,rafId:null};
+
+  // Ghost
+  const rect=row.getBoundingClientRect();
+  const g=row.cloneNode(true);
+  g.style.cssText=`position:fixed;top:${rect.top}px;left:${rect.left}px;width:${rect.width}px;`+
+    `z-index:999;pointer-events:none;background:#2c2c2e;border-radius:10px;`+
+    `box-shadow:0 12px 40px rgba(0,0,0,.6);transition:none;opacity:.9;`;
+  document.body.appendChild(g);
+  DG.ghost=g;
+  DG.originTop=rect.top;
+  row.classList.add('dragging');
+
+  document.addEventListener('touchmove',dragMove,{passive:false});
+  document.addEventListener('touchend',dragEnd,{passive:true});
+}
+
+function dragMove(e){
+  if(!DG.on)return;
+  e.preventDefault();
+  DG.touchY=e.touches[0].clientY;
+  const dy=DG.touchY-DG.startY;
+  DG.ghost.style.top=(DG.originTop+dy)+'px';
+
+  // Find row under finger
+  cancelAnimationFrame(DG.rafId);
+  DG.rafId=requestAnimationFrame(()=>{
+    const rows=[...document.querySelectorAll('.t-row[data-id]')];
+    rows.forEach(r=>{r.classList.remove('drop-above','drop-below');});
+    let found=null,pos='above';
+    for(const r of rows){
+      if(r===DG.src)continue;
+      const b=r.getBoundingClientRect();
+      if(DG.touchY>=b.top&&DG.touchY<=b.bottom){
+        found=r;
+        pos=DG.touchY<b.top+b.height/2?'above':'below';
+        break;
+      }
+    }
+    if(found){found.classList.add(pos==='above'?'drop-above':'drop-below');}
+    DG.over=found;DG.pos=pos;
+  });
+}
+
+function dragEnd(){
+  if(!DG.on)return;
+  DG.on=false;
+  document.removeEventListener('touchmove',dragMove);
+  document.removeEventListener('touchend',dragEnd);
+  cancelAnimationFrame(DG.rafId);
+
+  if(DG.ghost)DG.ghost.remove();
+  document.querySelectorAll('.t-row').forEach(r=>{
+    r.classList.remove('dragging','drop-above','drop-below');
+  });
+
+  if(DG.over&&DG.over!==DG.src){
+    const toId=DG.over.dataset.id;
+    const active=S.nTasks.filter(t=>!t.done);
+    const done=S.nTasks.filter(t=>t.done);
+    const fi=active.findIndex(t=>t.id===DG.id);
+    const ti=active.findIndex(t=>t.id===toId);
+    if(fi!==-1&&ti!==-1){
+      const [moved]=active.splice(fi,1);
+      const insertAt=DG.pos==='above'?ti:ti+1;
+      active.splice(fi<ti?insertAt-1:insertAt,0,moved);
+      S.nTasks=[...active,...done];
+      save();
+    }
+  }
+  DG={on:false,id:null,ghost:null,src:null,over:null,pos:'above',startY:0,touchY:0,rafId:null};
+  render();
+}
+function rTasks(){
+  const PRI_MAP={'!!!':'h','!!':'m','!':'l'};
+  const all=S.nTasks.filter(t=>!t.done&&(!t.local||t.date===today()||!t.date));
+  const tasks=S.priFilter==='all'?all:all.filter(t=>(PRI_MAP[t.priority]||'l')===S.priFilter);
+  const counts={h:all.filter(t=>t.priority==='!!!').length,m:all.filter(t=>t.priority==='!!').length,l:all.filter(t=>!['!!!','!!'].includes(t.priority)).length};
+  return`
+<div class="sync-row">
+  <span class="sync-lbl">📖 work · ${S.sync.status}</span>
+  <button class="sync-btn" onclick="syncNotion()">↻ Sync</button>
+</div>
+<div class="filter-row">
+  <button class="chip all${S.priFilter==='all'?' on':''}" onclick="setPriFilter('all')">ทั้งหมด ${all.length}</button>
+  <button class="chip h${S.priFilter==='h'?' on':''}" onclick="setPriFilter('h')">!!! ${counts.h}</button>
+  <button class="chip m${S.priFilter==='m'?' on':''}" onclick="setPriFilter('m')">!! ${counts.m}</button>
+  <button class="chip l${S.priFilter==='l'?' on':''}" onclick="setPriFilter('l')">! ${counts.l}</button>
+</div>
+<div class="add-row" style="margin-bottom:10px">
+  <select class="add-in" id="t-add-pri" style="flex:0 0 60px;padding:0 8px;font-size:13px;font-weight:700;">
+    <option value="!">!</option>
+    <option value="!!" selected>!!</option>
+    <option value="!!!">!!!</option>
+  </select>
+  <input class="add-in" id="t-add-in" placeholder="เพิ่ม task..." onkeydown="if(event.key==='Enter')addLocalTask()">
+  <button class="add-btn" onclick="addLocalTask()">+</button>
+</div>
+<div class="card">
+${S.sync.loading?'<div class="spin">กำลังโหลด Notion</div>':''}
+${!S.sync.loading&&tasks.length===0?`<div class="empty">${all.length?'ไม่มี task ใน filter นี้':'ยังไม่มี task<br><small style="color:#48484a">เพิ่มเองหรือกด Sync</small>'}</div>`:''}
+${tasks.map(t=>`
+<div class="t-row" data-id="${t.id}">
+  <div class="drag-handle" data-drag="${t.id}">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+      <line x1="3" y1="5" x2="13" y2="5"/><line x1="3" y1="8" x2="13" y2="8"/><line x1="3" y1="11" x2="13" y2="11"/>
+    </svg>
+  </div>
+  <div class="sq${t.done?' on':''}" onclick="doneTask('${t.id}')"></div>
+  <span class="t-label${t.done?' on':''}">${t.title}</span>
+  ${priTag(t.id,t.priority)}
+  <button class="del-btn" onclick="delTask('${t.id}',event)">×</button>
+</div>`).join('')}
+</div>`;}
+function setPriFilter(f){S.priFilter=f;render();}
+
+// ── Settings ──
+function rSettings(){
+  return`
+<div style="height:14px"></div>
+<div class="callout">
+  <strong>วิธี deploy Cloudflare Worker (ทำครั้งเดียว)</strong>
+  1. ไปที่ <b>workers.cloudflare.com</b> → สร้าง account (ฟรี)<br>
+  2. Create Worker → วาง code จากไฟล์ <b>worker.js</b> → Deploy<br>
+  3. Copy URL ของ Worker (เช่น <b>notion-proxy.xxx.workers.dev</b>)<br>
+  4. ใส่ใน Worker URL ด้านล่าง + Notion token → บันทึก
+</div>
+<div class="card s-group">
+  <div class="card-head"><span class="card-label">Cloudflare Worker</span></div>
+  <div class="s-row">
+    <div class="s-lbl">Worker URL</div>
+    <input class="s-in" id="s-worker" placeholder="https://notion-proxy.xxx.workers.dev" value="${S.cfg.workerUrl||''}">
+  </div>
+</div>
+<div class="card s-group">
+  <div class="card-head"><span class="card-label">Notion</span></div>
+  <div class="s-row">
+    <div class="s-lbl">Database ID</div>
+    <input class="s-in" id="s-db" value="${S.cfg.dbId}">
+    <div class="s-hint">pre-filled สำหรับ database "work" ของ Otto</div>
+  </div>
+</div>
+<button class="s-save" onclick="saveSettings()">บันทึก</button>`;
+}
+function saveSettings(){
+  S.cfg.workerUrl = document.getElementById('s-worker')?.value.trim()||'';
+  S.cfg.dbId  = document.getElementById('s-db')?.value.trim()||'';
+  save();
+  alert('บันทึกแล้ว! กลับไปกด Sync ที่หน้า Tasks ได้เลย 🙂');
+}
+
+// ═══════════════════════════════════════
+//  TIMETABLE
+// ═══════════════════════════════════════
+function rTimetable(){
+  return`<div class="tt-wrap week-a" id="tt-wrap">
+<div class="tt-controls">
+  <button class="tt-btn-full" onclick="ttShowFull()">
+    <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><rect x=".5" y=".5" width="6" height="6" rx="1.5" fill="white" opacity=".9"/><rect x="8.5" y=".5" width="6" height="6" rx="1.5" fill="white" opacity=".9"/><rect x=".5" y="8.5" width="6" height="6" rx="1.5" fill="white" opacity=".9"/><rect x="8.5" y="8.5" width="6" height="6" rx="1.5" fill="white" opacity=".9"/></svg>
+    ดูทั้งหมด
+  </button>
+  <div class="tt-select-wrap">
+    <select id="tt-day-select" onchange="ttFilterDay(this.value)">
+      <option value="">— เลือกวัน —</option>
+      <option value="mon">วันจันทร์</option>
+      <option value="tue">วันอังคาร</option>
+      <option value="wed">วันพุธ</option>
+      <option value="thu">วันพฤหัสบดี</option>
+      <option value="fri">วันศุกร์</option>
+    </select>
+    <span class="tt-select-arrow">▾</span>
+  </div>
+  <div class="tt-week-toggle">
+    <button class="tt-week-btn a active" id="tt-btn-a" onclick="ttSetWeek('a')"><span class="tt-week-dot"></span>A</button>
+    <div class="tt-week-divider"></div>
+    <button class="tt-week-btn b" id="tt-btn-b" onclick="ttSetWeek('b')"><span class="tt-week-dot"></span>B</button>
+  </div>
+</div>
+<div class="tt-day-heading" id="tt-day-heading">
+  <div class="tt-day-pill" id="tt-pill-th"></div>
+  <div class="tt-day-en" id="tt-pill-en"></div>
+</div>
+<div class="tt-days full" id="tt-grid">
+  <div class="tt-col" data-day="mon">
+    <div class="tt-col-head"><div class="dow">จันทร์</div><div class="doe">Monday</div></div>
+    <div class="tt-blocks">
+      <div class="tt-card tt-bio"><div class="tt-card-inner">
+        <div class="tt-card-top"><div class="tt-time">09:00 – 10:20</div><div class="tt-credit">1.0 หน่วย</div></div>
+        <div class="tt-code">ว30125</div><div class="tt-name">ความหลากหลายทางชีวภาพ</div>
+        <div class="tt-teacher">อ.ภัทรญา</div><div class="tt-room">3405</div>
+      </div></div>
+      <div class="tt-card tt-eng"><div class="tt-card-inner">
+        <div class="tt-card-top"><div class="tt-time">10:30 – 11:50</div><div class="tt-credit">1.5 หน่วย</div></div>
+        <div class="tt-code">อ30114</div><div class="tt-name">ภาษาอังกฤษวิชาการ 2</div>
+        <div class="tt-teacher">T.Darunee / T.Patipat / T.Elizabeth · IB</div>
+      </div></div>
+      <div class="tt-lunch">🍱 พักกลางวัน · 11:50 – 12:50</div>
+      <div class="tt-act">12:50 – 14:10 · ว่าง</div>
+      <div class="tt-card tt-hpe"><div class="tt-card-inner">
+        <div class="tt-card-top"><div class="tt-time">14:20 – 15:40</div><div class="tt-credit">1.0 หน่วย</div></div>
+        <div class="tt-code">พ30201</div><div class="tt-name">กีฬาประเภททีม</div>
+        <div class="tt-teacher">อ.จิรพนธ์</div><div class="tt-room">ศูนย์กีฬา ชั้น 4</div>
+      </div></div>
+    </div>
+  </div>
+  <div class="tt-col" data-day="tue">
+    <div class="tt-col-head"><div class="dow">อังคาร</div><div class="doe">Tuesday</div></div>
+    <div class="tt-blocks">
+      <div class="tt-card tt-com"><div class="tt-card-inner">
+        <div class="tt-card-top"><div class="tt-time">09:00 – 10:20</div><div class="tt-credit">1.0 หน่วย</div></div>
+        <div class="tt-code">ว30149 · กลุ่ม 4 COM</div><div class="tt-name">สัมมนาคอมพิวเตอร์</div>
+        <div class="tt-teacher">อ.ศิริพร ศักดิ์บุญญารัตน์</div><div class="tt-room">1202</div>
+      </div></div>
+      <div class="tt-act">10:30 – 11:50 · ว่าง</div>
+      <div class="tt-lunch">🍱 พักกลางวัน · 11:50 – 12:50</div>
+      <div class="tt-card tt-tha"><div class="tt-card-inner">
+        <div class="tt-card-top"><div class="tt-time">12:50 – 14:10</div><div class="tt-credit">1.0 หน่วย</div></div>
+        <div class="tt-code">ท30105</div><div class="tt-name">หลักภาษาไทยในชีวิตประจำวัน</div>
+        <div class="tt-teacher">อ.ธวัชชัย สุลาลัย</div><div class="tt-room">1605</div>
+      </div></div>
+      <div class="tt-act">14:20 – 15:40 · ว่าง</div>
+      <div class="tt-act">15:50 – 16:30 · กิจกรรมพัฒนาผู้เรียน</div>
+    </div>
+  </div>
+  <div class="tt-col" data-day="wed">
+    <div class="tt-col-head"><div class="dow">พุธ</div><div class="doe">Wednesday</div></div>
+    <div class="tt-blocks">
+      <div class="tt-card tt-phy" data-week="a"><div class="tt-card-inner">
+        <div class="tt-card-top"><div class="tt-time">08:30 – 09:50</div><div style="display:flex;gap:3px;align-items:center"><div class="tt-wbadge">สัปดาห์ A</div><div class="tt-credit">0.5 หน่วย</div></div></div>
+        <div class="tt-code">ว30106</div><div class="tt-name">ดาราศาสตร์พื้นฐาน</div>
+        <div class="tt-teacher">อ.กมลพร</div><div class="tt-room">3605</div>
+      </div></div>
+      <div class="tt-card tt-soc" data-week="b"><div class="tt-card-inner">
+        <div class="tt-card-top"><div class="tt-time">08:30 – 09:50</div><div style="display:flex;gap:3px;align-items:center"><div class="tt-wbadge">สัปดาห์ B</div><div class="tt-credit">0.5 หน่วย</div></div></div>
+        <div class="tt-code">ส30109</div><div class="tt-name">หน้าที่พลเมือง</div>
+        <div class="tt-teacher">อ.อภิรักษ์</div><div class="tt-room">1503</div>
+      </div></div>
+      <div class="tt-card tt-bio"><div class="tt-card-inner">
+        <div class="tt-card-top"><div class="tt-time">10:00 – 11:20</div><div class="tt-credit">1.0 หน่วย</div></div>
+        <div class="tt-code">ว30617</div><div class="tt-name">หลักการเลี้ยงสัตว์</div>
+        <div class="tt-teacher">อ.เมษสุวัลย์</div><div class="tt-room">3403</div>
+      </div></div>
+      <div class="tt-lunch">🍱 พักกลางวัน · 11:20 – 12:20</div>
+      <div class="tt-rotc">🪖 กิจกรรมนักศึกษาวิชาทหาร<br>12:20 เป็นต้นไป</div>
+    </div>
+  </div>
+  <div class="tt-col" data-day="thu">
+    <div class="tt-col-head"><div class="dow">พฤหัสฯ</div><div class="doe">Thursday</div></div>
+    <div class="tt-blocks">
+      <div class="tt-card tt-mth"><div class="tt-card-inner">
+        <div class="tt-card-top"><div class="tt-time">08:30 – 09:50</div><div class="tt-credit">1.0 หน่วย</div></div>
+        <div class="tt-code">ค30107</div><div class="tt-name">แคลคูลัสและการประยุกต์</div>
+        <div class="tt-teacher">อ.ฐิติพงศ์</div><div class="tt-room">1302</div>
+      </div></div>
+      <div class="tt-card tt-eng" data-week="a"><div class="tt-card-inner">
+        <div class="tt-card-top"><div class="tt-time">10:00 – 11:20</div><div style="display:flex;gap:3px;align-items:center"><div class="tt-wbadge">สัปดาห์ A</div></div></div>
+        <div class="tt-code">อ30114</div><div class="tt-name">ภาษาอังกฤษวิชาการ 2</div>
+        <div class="tt-teacher">T.Darunee / T.Patipat / T.Elizabeth · IB</div>
+      </div></div>
+      <div class="tt-card tt-art" data-week="b"><div class="tt-card-inner">
+        <div class="tt-card-top"><div class="tt-time">10:00 – 11:20</div><div style="display:flex;gap:3px;align-items:center"><div class="tt-wbadge">สัปดาห์ B</div><div class="tt-credit">0.5 หน่วย</div></div></div>
+        <div class="tt-code">ศ30105</div><div class="tt-name">ทัศนศิลป์</div>
+        <div class="tt-teacher">อ.มานนท์</div><div class="tt-room">1108</div>
+      </div></div>
+      <div class="tt-lunch">🍱 พักกลางวัน · 11:20 – 12:20</div>
+      <div class="tt-act">12:20 – 13:00 · ว่าง</div>
+      <div class="tt-card tt-hpe"><div class="tt-card-inner">
+        <div class="tt-card-top"><div class="tt-time">13:00 – 13:40</div><div class="tt-credit">0.5 หน่วย</div></div>
+        <div class="tt-code">พ30105</div><div class="tt-name">สุขศึกษาและพลศึกษา 5</div>
+        <div class="tt-teacher">อ.สุชาวดี + อ.อาริตา</div><div class="tt-room">ศูนย์กีฬา ชั้น 2</div>
+      </div></div>
+      <div class="tt-card tt-sci"><div class="tt-card-inner">
+        <div class="tt-card-top"><div class="tt-time">13:50 – 14:30</div><div class="tt-credit">0.5 หน่วย</div></div>
+        <div class="tt-code">ว30148</div><div class="tt-name">โครงงานวิทยาศาสตร์ 3</div>
+      </div></div>
+    </div>
+  </div>
+  <div class="tt-col" data-day="fri">
+    <div class="tt-col-head"><div class="dow">ศุกร์</div><div class="doe">Friday</div></div>
+    <div class="tt-blocks">
+      <div class="tt-card tt-phy"><div class="tt-card-inner">
+        <div class="tt-card-top"><div class="tt-time">08:30 – 09:50</div><div class="tt-credit">1.0 หน่วย</div></div>
+        <div class="tt-code">ว30105</div><div class="tt-name">ฟิสิกส์ยุคใหม่</div>
+        <div class="tt-teacher">อ.รุ่งโรจน์</div><div class="tt-room">3703</div>
+      </div></div>
+      <div class="tt-card tt-soc"><div class="tt-card-inner">
+        <div class="tt-card-top"><div class="tt-time">10:00 – 11:20</div><div class="tt-credit">1.0 หน่วย</div></div>
+        <div class="tt-code">ส30108</div><div class="tt-name">ศิลปศาสตร์ศึกษา 5</div>
+        <div class="tt-teacher">อ.วิสิทธิ์</div><div class="tt-room">1601</div>
+      </div></div>
+      <div class="tt-lunch">🍱 พักกลางวัน · 11:20 – 12:20</div>
+      <div class="tt-act">12:20 – 13:40 · ว่าง</div>
+      <div class="tt-card tt-kor"><div class="tt-card-inner">
+        <div class="tt-card-top"><div class="tt-time">13:50 – 15:10</div><div class="tt-credit">1.5 หน่วย</div></div>
+        <div class="tt-code">ต30202</div><div class="tt-name">ภาษาเกาหลีขั้นต้น 2</div>
+        <div class="tt-teacher">Mr. Gwangjil Jang</div><div class="tt-room">1104</div>
+      </div></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="tt-weekend">
+  <div class="tt-weekend-title">🌿 วิชานอกตาราง</div>
+  <div class="tt-weekend-item">
+    <div class="tt-weekend-badge">ว30801</div>
+    <div class="tt-weekend-info"><strong>หัวข้อพิเศษ 1 — อนุกรมวิธานกับพฤกษาหาร</strong><br>อ.จิโรจน์ · ห้อง 3401 · Mini-course นอกเวลา · 1.0 หน่วย</div>
+  </div>
+</div>
+
+<div class="tt-legend-wrap">
+  <div class="tt-legend-title">สีวิชา</div>
+  <div class="tt-legend">
+    <div class="tt-li"><div class="tt-ld" style="background:#10b981"></div>ชีววิทยา</div>
+    <div class="tt-li"><div class="tt-ld" style="background:#3b82f6"></div>ฟิสิกส์</div>
+    <div class="tt-li"><div class="tt-ld" style="background:#f59e0b"></div>คณิตศาสตร์</div>
+    <div class="tt-li"><div class="tt-ld" style="background:#ef4444"></div>ภาษาไทย</div>
+    <div class="tt-li"><div class="tt-ld" style="background:#818cf8"></div>อังกฤษ</div>
+    <div class="tt-li"><div class="tt-ld" style="background:#22c55e"></div>สังคม</div>
+    <div class="tt-li"><div class="tt-ld" style="background:#ec4899"></div>ศิลปะ</div>
+    <div class="tt-li"><div class="tt-ld" style="background:#f97316"></div>พลศึกษา</div>
+    <div class="tt-li"><div class="tt-ld" style="background:#64748b"></div>โครงงาน</div>
+    <div class="tt-li"><div class="tt-ld" style="background:#38bdf8"></div>คอม</div>
+    <div class="tt-li"><div class="tt-ld" style="background:#ca8a04"></div>เกาหลี</div>
+  </div>
+</div>
+<p class="tt-note">⚑ badge สีม่วง = สัปดาห์ A · สีน้ำเงิน = สัปดาห์ B<br>⚑ จ–อ เริ่ม 09:00 · พ–ศ เริ่ม 08:30<br>⚑ ว30617 หลักการเลี้ยงสัตว์ เรียนทุกพุธ (ไม่สลับสัปดาห์)</p>
+</div>`;
+}
+
+const TT_DAY={mon:{th:'วันจันทร์',en:'Monday'},tue:{th:'วันอังคาร',en:'Tuesday'},wed:{th:'วันพุธ',en:'Wednesday'},thu:{th:'วันพฤหัสบดี',en:'Thursday'},fri:{th:'วันศุกร์',en:'Friday'}};
+
+function ttInit(){
+  const dayMap={1:'mon',2:'tue',3:'wed',4:'thu',5:'fri'};
+  const d=dayMap[new Date().getDay()];
+  if(d){document.getElementById('tt-day-select').value=d;ttFilterDay(d);}
+}
+function ttSetWeek(w){
+  const wrap=document.getElementById('tt-wrap');
+  if(!wrap)return;
+  wrap.className='tt-wrap week-'+w;
+  document.getElementById('tt-btn-a').className='tt-week-btn a'+(w==='a'?' active':'');
+  document.getElementById('tt-btn-b').className='tt-week-btn b'+(w==='b'?' active':'');
+}
+function ttShowFull(){
+  document.getElementById('tt-grid').className='tt-days full';
+  document.getElementById('tt-day-heading').classList.remove('visible');
+  document.getElementById('tt-day-select').value='';
+}
+function ttFilterDay(val){
+  if(!val){ttShowFull();return;}
+  document.getElementById('tt-grid').className='tt-days single';
+  document.querySelectorAll('.tt-col').forEach(c=>c.classList.remove('active'));
+  const t=document.querySelector(`.tt-col[data-day="${val}"]`);
+  if(t)t.classList.add('active');
+  document.getElementById('tt-pill-th').textContent=TT_DAY[val]?.th||'';
+  document.getElementById('tt-pill-en').textContent=TT_DAY[val]?.en||'';
+  document.getElementById('tt-day-heading').classList.add('visible');
+}
+
+
+load();
+document.getElementById('hdr-date').textContent=thaiDate();
+render();
 </script>
 </body>
 </html>
